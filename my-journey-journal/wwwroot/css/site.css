@@ -16,10 +16,11 @@ html {
 
 /* Body spacing */
 body {
-  margin: 0;
-  margin-bottom: 60px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.6;
+    margin: 0;
+    margin-bottom: 60px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #eee;
 }
 
 /* Buttons */
@@ -60,6 +61,11 @@ a:hover {
 /*  background-color: #ffffffc7;*/
   border-radius: 12px;
 /*  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);*/
+}
+
+/* Add shadow below search bar. why does it only apply there? not sure. look into it */
+.box-shadow {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
 }
 
 /* Footer */
