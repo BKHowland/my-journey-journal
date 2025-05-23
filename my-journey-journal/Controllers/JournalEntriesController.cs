@@ -25,6 +25,18 @@ namespace my_journey_journal.Controllers
             return View(await _context.JournalEntry.ToListAsync());
         }
 
+        // GET: JournalEntries/ShowSearchForm
+        public async Task<IActionResult> ShowSearchForm()
+        {
+            return View("ShowSearchForm");
+        }
+
+        // POST: JournalEntries/ShowSearchResults
+        public async Task<IActionResult> ShowSearchResults(String SearchPhrase)
+        {
+            return View("Index", await _context.JournalEntry.Where(j => j.EntryName.Contains(SearchPhrase)).ToListAsync());
+        }
+
         // GET: JournalEntries/Details/5
         public async Task<IActionResult> Details(int? id)
         {
