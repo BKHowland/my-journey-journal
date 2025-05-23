@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using my_journey_journal.Models;
 
 namespace my_journey_journal.Data
 {
@@ -9,5 +10,6 @@ namespace my_journey_journal.Data
             : base(options)
         {
         }
+        public DbSet<my_journey_journal.Models.JournalEntry> JournalEntry { get; set; } = default!;
     }
 }
