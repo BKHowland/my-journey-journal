@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Update;
 using my_journey_journal.Data;
 using my_journey_journal.Models;
 
@@ -115,12 +116,25 @@ namespace my_journey_journal.Controllers
             {
                 try
                 {
-                    if (journalEntry.DateCreated == null)
+                    // Get the existing entry from the DB
+                    var existingEntry = await _context.JournalEntry.FindAsync(id);
+                    if (existingEntry == null)
                     {
-                        journalEntry.DateCreated = DateTime.Now; // Set the new Date property here to current time
-                        // only if it did not yet have one from before this attribute was added.
+                        return NotFound();
                     }
-                    _context.Update(journalEntry);
+
+                    // Update only the editable fields
+                    existingEntry.EntryName = journalEntry.EntryName;
+                    existingEntry.EntryDetails = journalEntry.EntryDetails;
+
+                    // Do NOT overwrite DateCreated — keep its original value
+                    // Or set it if for some reason it's still null
+                    if (existingEntry.DateCreated == null)
+                    {
+                        existingEntry.DateCreated = DateTime.Now;
+                    }
+
+                    //_context.Update(journalEntry); //no longer using form data directly
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
