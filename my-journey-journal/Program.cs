@@ -20,6 +20,9 @@ namespace my_journey_journal
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+            // Bind to all IPs on port 5000
+            builder.WebHost.UseUrls("http://0.0.0.0:5000");
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
