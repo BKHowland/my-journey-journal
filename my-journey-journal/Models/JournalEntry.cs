@@ -4,7 +4,8 @@
     {
         public int Id { get; set; }
         public string EntryName { get; set; }
-        public string EntryDetails { get; set; }
+        public string? EntryDetails { get; set; }
+        public DateTime? DateCreated { get; set; }
 
 
         public JournalEntry()

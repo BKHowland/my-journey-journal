@@ -73,6 +73,7 @@ namespace my_journey_journal.Controllers
         {
             if (ModelState.IsValid)
             {
+                journalEntry.DateCreated = DateTime.Now; // Set the new Date property here to current time
                 _context.Add(journalEntry);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -114,6 +115,11 @@ namespace my_journey_journal.Controllers
             {
                 try
                 {
+                    if (journalEntry.DateCreated == null)
+                    {
+                        journalEntry.DateCreated = DateTime.Now; // Set the new Date property here to current time
+                        // only if it did not yet have one from before this attribute was added.
+                    }
                     _context.Update(journalEntry);
                     await _context.SaveChangesAsync();
                 }
