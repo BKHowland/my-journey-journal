@@ -96,6 +96,32 @@ namespace my_journey_journal.Tests.ControllerTests
             viewResult.ViewName.Should().BeNull(); 
             // Expected when you return View("ShowSearchForm") from ShowSearchForm method (same name)
         }
-        public JournalEntriesController Controller => _controller;
+
+        [Fact]
+        public async Task JournalEntriesController_ShowSearchResults_ReturnsViewResultWithSearchResults()
+        {
+            //Arrange - what do I need to bring it in?
+            // Use a unique DB name per test
+            Initialize(Guid.NewGuid().ToString());
+            string searchPhrase = "Test Entry 2";
+
+            //Act
+            var result = await _controller.ShowSearchResults(searchPhrase);
+
+            //Assert
+            // while the def for index says IActionResult,
+            // it returns a ViewResult, a subtype. keeps it flexible.
+            result.Should().BeOfType<ViewResult>();
+            result.Should().BeAssignableTo<IActionResult>();
+
+            //compiler still sees result as a IActionResult. Explicit cast it.
+            var viewResult = result as ViewResult;
+            viewResult.Model.Should().BeAssignableTo<IEnumerable<JournalEntry>>();
+
+            var model = viewResult.Model as IEnumerable<JournalEntry>;
+            model.Should().HaveCount(1);
+            model.Should().Contain(e => e.EntryName == "Test Entry 2" && e.EntryDetails == "Details 2");
+        }
+
     }
 }
