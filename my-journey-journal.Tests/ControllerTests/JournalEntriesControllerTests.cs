@@ -123,5 +123,34 @@ namespace my_journey_journal.Tests.ControllerTests
             model.Should().Contain(e => e.EntryName == "Test Entry 2" && e.EntryDetails == "Details 2");
         }
 
+        [Fact]
+        public async Task JournalEntriesController_Details_ReturnsViewResultWithEntryDetails()
+        {
+            //Arrange - what do I need to bring it in?
+            // Use a unique DB name per test
+            Initialize(Guid.NewGuid().ToString());
+            int id = 1;
+
+            //Act
+            var result = await _controller.Details(id);
+
+            //Assert
+            // while the def for index says IActionResult,
+            // it returns a ViewResult, a subtype. keeps it flexible.
+            result.Should().BeOfType<ViewResult>();
+            result.Should().BeAssignableTo<IActionResult>();
+
+            //compiler still sees result as a IActionResult. Explicit cast it.
+            var viewResult = result as ViewResult;
+            viewResult.Model.Should().BeAssignableTo<JournalEntry>();
+
+            var model = viewResult.Model as JournalEntry;
+            model.Id.Should().Be(1);
+            model.EntryName.Should().Be("Test Entry");
+
+            //possible alternative: use FakeItEasy to create fake journal entry
+            // https://youtu.be/QnIwfFjBkTM?si=uyqe6PUMHV5PGo0g&t=1702 
+        }
+
     }
 }
