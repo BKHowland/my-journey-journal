@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -27,8 +28,16 @@ namespace my_journey_journal.Tests.ControllerTests
             //instead, use EF Core's In-Memory Provider. More like 
             //an integration test just using a fast disposable db in memory
 
+            //moved below to allow unique db for each test
+            // to avoid altering the DB the more tests are added.
+
+        }
+
+        // Initialize DB and controller with unique DB name
+        public void Initialize(string databaseName)
+        {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase") // Use a unique name per test class
+            .UseInMemoryDatabase(databaseName: databaseName) // Use a unique name per test class
                 .Options;
 
             _context = new ApplicationDbContext(options);
@@ -39,15 +48,14 @@ namespace my_journey_journal.Tests.ControllerTests
             _context.JournalEntry.Add(new JournalEntry { EntryName = "Test Entry", EntryDetails = "Details", DateCreated = DateTime.Now });
             _context.JournalEntry.Add(new JournalEntry { EntryName = "Test Entry 2", EntryDetails = "Details 2", DateCreated = DateTime.Now });
             _context.SaveChanges();
-
         }
 
         [Fact]
-        public async Task JournalEntriesController_Index_ReturnsSuccess()
+        public async Task JournalEntriesController_Index_ReturnsViewResultWithAllEntries()
         {
             //Arrange - what do I need to bring it in?
-            // need
-
+            // Use a unique DB name per test
+            Initialize(Guid.NewGuid().ToString());
 
             //Act
             var result = await _controller.Index();
@@ -67,5 +75,27 @@ namespace my_journey_journal.Tests.ControllerTests
             model.Should().Contain(e => e.EntryName == "Test Entry" && e.EntryDetails == "Details");
             model.Should().Contain(e => e.EntryName == "Test Entry 2" && e.EntryDetails == "Details 2");
         }
+
+        [Fact]
+        public async Task JournalEntriesController_ShowSearchForm_ReturnsShowSearchFormView()
+        {
+            //Arrange - what do I need to bring it in?
+            Initialize(Guid.NewGuid().ToString());
+
+            //Act
+            var result = await _controller.Index();
+
+            //Assert
+            // while the def for method says IActionResult,
+            // it returns a ViewResult, a subtype. keeps it flexible.
+            result.Should().BeOfType<ViewResult>();
+            result.Should().BeAssignableTo<IActionResult>();
+
+            //compiler still sees result as a IActionResult. Explicit cast it.
+            var viewResult = result as ViewResult;
+            viewResult.ViewName.Should().BeNull(); 
+            // Expected when you return View("ShowSearchForm") from ShowSearchForm method (same name)
+        }
+        public JournalEntriesController Controller => _controller;
     }
 }
